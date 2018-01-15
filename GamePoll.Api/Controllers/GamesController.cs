@@ -3,16 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using GamePoll.Core.Services.GameData;
 
 namespace GamePoll.Api.Controllers
 {
     [Route("api/[controller]")]
     public class GamesController : Controller
     {
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IGameService _service;
+
+        public GamesController(IGameService service)
         {
-            return new string[] { "value1", "value2" };
+            _service = service;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult>Get()
+        {
+            var games = await _service.GetGamesAsync();
+            
+            return Ok(games);
         }
 
         [HttpGet("{id}")]
