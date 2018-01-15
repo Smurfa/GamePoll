@@ -17,7 +17,7 @@ namespace GamePoll.Core.Repositories
             _connectionFactory = factory;
         }
 
-        public async Task<IEnumerable<GameEntity>> Get()
+        public async Task<IEnumerable<GameEntity>> GetAsync()
         {
             using (var connection = _connectionFactory.Create())
             {
@@ -25,30 +25,40 @@ namespace GamePoll.Core.Repositories
             }
         }
 
-        public async Task<GameEntity> Get(int id)
+        public async Task<GameEntity> GetAsync(int id)
         {
             using (var connection = _connectionFactory.Create())
             {
-                return (await connection.QueryAsync<GameEntity>("SELECT * FROM GameData.Games WHERE Id = @Id", new { Id = id })).SingleOrDefault();
+                return (await connection.QueryAsync<GameEntity>("SELECT * FROM GameData.Games WHERE Id = @Id",
+                    new { Id = id })).SingleOrDefault();
             }
         }
 
-        public async Task Add(GameEntity data)
+        public async Task<int> AddAsync(GameEntity data)
         {
             using (var connection = _connectionFactory.Create())
             {
-                var id = await connection.ExecuteAsync("INSERT INTO GameData.Games(Title, ImageUrl) VALUES (@Title, @ImageUrl)",
-                    data);
-                var temp = 0;
+                const string query = @"INSERT INTO GameData.Games(Title, ImageUrl) VALUES (@Title, @ImageUrl)
+SELECT CAST(SCOPE_IDENTITY() as int)";
+                return (await connection.QueryAsync<int>(query, data)).SingleOrDefault();
             }
         }
 
-        public async Task Update(GameEntity data)
+        public async Task<bool> UpdateAsync(GameEntity data)
         {
             using (var connection = _connectionFactory.Create())
             {
                 await connection.ExecuteAsync("UPDATE GameData.Games SET Title = @Title, ImageUrl = @ImageUrl WHERE Id = @Id",
                     data);
+                return true;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            using (var connection = _connectionFactory.Create())
+            {
+                return await connection.ExecuteAsync("DELETE FROM GameData.Games WHERE Id = @Id", new { Id = id }) == 1;
             }
         }
     }

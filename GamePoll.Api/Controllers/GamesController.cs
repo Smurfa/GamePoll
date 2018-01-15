@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GamePoll.Core.Repositories.Entities;
 using Microsoft.AspNetCore.Mvc;
 using GamePoll.Core.Services.GameData;
+using Microsoft.AspNetCore.Http;
 
 namespace GamePoll.Api.Controllers
 {
@@ -21,29 +23,56 @@ namespace GamePoll.Api.Controllers
         public async Task<IActionResult>Get()
         {
             var games = await _service.GetGamesAsync();
-            
+            if (games == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
             return Ok(games);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var game = await _service.GetGameAsync(id);
+            if (game == null)
+            {
+                return NotFound(id);
+            }
+            return Ok(game);
         }
 
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult>Post([FromBody]GameEntity value)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            return Ok(await _service.AddGameAsync(value));
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<IActionResult> Put(int id, [FromBody]GameEntity value)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            return Ok(await _service.UpdateGameAsync(value));
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult>Delete(int id)
         {
+            if (id < 0)
+            {
+                return BadRequest();
+            }
+            if (await _service.DeleteGameAsync(id))
+            {
+                return Ok();
+            }
+            return NotFound(id);
         }
     }
 }

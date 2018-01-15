@@ -5,9 +5,10 @@ namespace GamePoll.Core.Repositories
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> Get();
-        Task<T> Get(int id);
-        Task Add(T data);
-        Task Update(T data);
+        Task<IEnumerable<T>> GetAsync();
+        Task<T> GetAsync(int id);
+        Task<int> AddAsync(T data);
+        Task<bool> UpdateAsync(T data);
+        Task<bool> DeleteAsync(int id);
     }
 }
