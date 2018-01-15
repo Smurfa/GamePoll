@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GamePoll.Core.Repositories
 {
-    internal interface IRepository<T> where T : class
+    public interface IRepository<T> where T : class
     {
-        IEnumerable<T> Get();
-        T Get(int id);
-        void Add(T data);
-        void Update(T data);
+        Task<IEnumerable<T>> Get();
+        Task<T> Get(int id);
+        Task Add(T data);
+        Task Update(T data);
     }
 }
