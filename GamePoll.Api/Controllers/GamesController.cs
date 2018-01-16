@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GamePoll.Core.Models;
 using GamePoll.Core.Repositories.Entities;
 using Microsoft.AspNetCore.Mvc;
 using GamePoll.Core.Services.GameData;
@@ -42,7 +43,7 @@ namespace GamePoll.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>Post([FromBody]GameEntity value)
+        public async Task<IActionResult>Post([FromBody]GameModel value)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +53,7 @@ namespace GamePoll.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]GameEntity value)
+        public async Task<IActionResult> Put(int id, [FromBody]GameModel value)
         {
             if (!ModelState.IsValid)
             {

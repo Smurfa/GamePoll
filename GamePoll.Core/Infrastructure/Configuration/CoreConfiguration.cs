@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using GamePoll.Core.Infrastructure.Configuration.AutoMapper;
 using GamePoll.Core.Infrastructure.Data;
 using GamePoll.Core.Repositories;
 using GamePoll.Core.Repositories.Entities;
@@ -10,12 +10,13 @@ namespace GamePoll.Core.Infrastructure.Configuration
 {
     public static class CoreConfigurationExtensions
     {
-        public static IServiceCollection AddCoreConfiguration(this IServiceCollection service, IConfiguration configuration)
+        public static IServiceCollection AddCoreConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            return service
+            return services
                 .AddScoped<IGameService, GameService>()
                 .AddScoped<IRepository<GameEntity>, GameRepository>()
-                .AddSingleton<IDbConnectionFactory>(factory => new SqlConnectionFactory(configuration.GetConnectionString("CoreData")));
+                .AddSingleton<IDbConnectionFactory>(factory => new SqlConnectionFactory(configuration.GetConnectionString("CoreData")))
+                .AddSingleton(AutoMapperConfiguration.CreateConfiguration().CreateMapper());
         }
     }
 }
